@@ -277,16 +277,17 @@ def get_vivado_bin(target_version: str, download_dir: str, timeout: float = 20):
             if isinstance(elem, Select):
                 options = elem.options[1:]
                 previous_value = elem.first_selected_option.get_attribute("value")
-                if previous_value and previous_value.strip():
-                    in_request = f"{key} (optional, leave empty for autofilled value \"{previous_value}\"):" if optional\
-                        else f"{key} (leave empty for autofilled value \"{previous_value}\"):"
-                else:
-                    in_request = f"{key} (optional):" if optional else f"{key}:"
-                print(in_request)
+                print(f"{key}:")
                 for idx, option in enumerate(options):
                     print(f"\t({idx + 1}): {option.text}")
                 while True:
-                    response = str(input(f"Choice [1-{len(options)}]: "))
+                    in_request = f"Choice [1-{len(options)}]"
+                    if previous_value and previous_value.strip():
+                        in_request += f" (optional, leave empty for autofilled value \"{previous_value}\"): " if optional\
+                            else f" (leave empty for autofilled value \"{previous_value}\"): "
+                    else:
+                        in_request += f" (optional): " if optional else ": "
+                    response = str(input(in_request))
                     if not response and previous_value and previous_value.strip():
                         break
                     if response.isdigit() and int(response) in range(1, len(options) + 1):
